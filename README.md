@@ -1,2 +1,2 @@
-# rrhh-betech
-Aca se suben los cambios
+# rrhh
+Repositorio para el proyecto rrhh
