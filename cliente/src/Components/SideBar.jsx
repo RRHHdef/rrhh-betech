@@ -12,7 +12,7 @@ export default function SideBar() {
                     <button onClick={()=>navegar('/Search')}><ion-icon  className="search_icons" name="search-outline"/>Busqueda</button>
                 </div>
                 <div >
-                    <button ><ion-icon name="person-add-outline"/>Añadir Empleado</button>
+                    <button onClick={()=>navegar('/empleados/nuevo')} ><ion-icon name="person-add-outline"/>Añadir Empleado</button>
                 </div>
                 <div >
                     <button > <ion-icon name="gift-outline"/>Cumpleaños</button>

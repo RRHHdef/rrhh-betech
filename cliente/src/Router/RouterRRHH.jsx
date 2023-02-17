@@ -2,6 +2,7 @@ import {
     Routes,
     Route
    } from "react-router-dom"
+import { Formulario } from '../Components/Formulario'
 import Empleados from "../Components/Empleados"
 import Error404 from "../Components/Error404"
 
@@ -14,6 +15,7 @@ export default function RouterRRHH() {
         <Route path="/" element={<Empleados/>}/>
         <Route path='/search' element={<SearchBar/>}/>
         <Route path='*' element={<Error404/>}/>
+        <Route path='/empleados/nuevo' element={<Formulario/>}/>
     </Routes>
   
   )
