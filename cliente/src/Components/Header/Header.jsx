@@ -11,14 +11,14 @@ export default function Header() {
       <section className='header__logo'>
         <img src={logo} alt="img" className='logo'/>
       </section>
-      <seccion className='header__secciones'>
+      <section className='header__secciones'>
         <div className='fecha'>{hoy.toLocaleDateString()}</div>
         <div className='area'>
           <Link to='#' className='link__area'>
             Recursos Humanos
           </Link>
           </div>
-      </seccion>
+      </section>
     </div>
   )
 }

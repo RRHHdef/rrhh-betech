@@ -1,32 +1,50 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 const url = 'http://localhost:5000/empleados/nuevo'
 
+const initialState = {
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    domicilioReal: '',
+    domicilioLegal: '',
+    ciudad: '',
+    cp: '',
+    dni: '',
+    fechaNacimiento: '',
+    lugarNacimiento: '',
+    fechaIngreso: '',
+    sector:'',
+    rol: '',
+    elementos: '',
+  };
+
+  const sectores = {
+    'Recursos Humanos': ['Seleccion de personal', 'Administracion'],
+    'Sistemas': ['Odoo', 'Desarrollo', 'Digitalizacion'],
+    'Infraestructura': ['Telecomunicaciones', 'Servidores', 'Mantenimiento', 'Redes'],
+    'Contabilidad': ['Contador', 'Auxiliar', 'Control y Gestion']
+}
+
 export const Formulario = () => {
 
-     const[nombre , setNombre] = useState('')
-     const[apellido, setApellido] = useState('')
-     const[domicilioReal, setDomR] = useState('')
-     const[domicilioLegal, setDomL] = useState('')
-     const[ciudad, setCiudad] = useState('')
-     const[cp, setCp] = useState('')
-     const[dni, setDni] = useState('')
-     const[fechaNacimiento, setFechaNac] = useState('')
-     const[lugarNacimiento, setLugarNac] = useState('')
-     const[fechaIngreso, setfechaIngreso] = useState('')
-     const[rol, setRol] = useState('')
-     const[elementos, setElementos] = useState('')
+     const[values , setValues] = useState(initialState)
+     console.log(values)
+
+     useEffect(() => {
+
+        handleSector(sectores)
+        handleRol(sectores)
+        
+     },[values.sector])
      
      
      const handleSubmit = async (e) => {
         e.preventDefault()
            try {
-            const resp = await axios.post(url, {
-                nombre: nombre, apellido: apellido, domicilioReal: domicilioReal, 
-                domicilioLegal: domicilioLegal, ciudad: ciudad, cp: cp, dni: dni, fechaNacimiento: fechaNacimiento, 
-                lugarNacimiento: lugarNacimiento, fechaIngreso: fechaIngreso, rol: rol, elementos: elementos
-            })
+            const resp = await axios.post(url, values)
             console.log('desde axios: ',resp.data) // Devuelve 'created' por consola si todo esta ok
             if(resp.data) {
                 const itemOk = document.getElementById('contenedor')
@@ -36,26 +54,66 @@ export const Formulario = () => {
                 div.role = 'alert'
                 itemOk.appendChild(div)
                 setTimeout(() => itemOk.removeChild(div) , 3000);
-                //alert('Se agrego el empleado correctamente')
-
-                setNombre('')
-                setApellido('')
-                setDomR('')
-                setDomL('')
-                setCiudad('')
-                setCp('')
-                setDni('')
-                setFechaNac('')
-                setLugarNac('')
-                setfechaIngreso('')
-                setRol('')
-                setElementos('')
+                
+                setValues(initialState)
             }
         } catch (error) {
             console.log(error.response)
         }
      }
 
+     const handleChange = (e) => {
+        const {name, value} = e.target
+        setValues((prevValues) => ({...prevValues, [name]: value}))
+     }
+
+    const handleRol = (obj) => {
+        const sector = document.getElementById('sector')
+        const rol = document.getElementById('rol')
+        deleteNode(rol)
+        rol.appendChild(createDisabledOption())
+        if(obj[values.sector]){
+            obj[values.sector].map(element => createOption(element, 'rol'))
+        }
+    }
+
+    const handleSector = (obj) => {
+        const sector = document.getElementById('sector')
+        deleteNode(sector)
+        sector.appendChild(createDisabledOption())
+        let claves = Object.keys(obj)
+        claves.map(element => createOption(element, 'sector'))
+    }
+    
+
+    const createOption = (value, id) => {
+        let ide = document.getElementById(id)
+        let option = document.createElement('option')
+        option.textContent = value
+        option.value = value
+        ide.appendChild(option)  
+        
+    }
+
+    const createDisabledOption = () => {
+        const option = document.createElement('option')
+        option.textContent = 'Selecciona una opcion'
+        option.setAttribute('disabled', '')
+        option.setAttribute('selected', '')
+        option.value = ''
+        return option
+
+    }
+
+    const deleteNode = (node) => {
+        while (node.firstChild){
+            node.removeChild(node.firstChild);
+          }
+    }
+
+
+
+  
 
   return (
     <div className="container ">
@@ -67,90 +125,102 @@ export const Formulario = () => {
         <form className="row g-3" id='form' onSubmit={ handleSubmit }>
 
             <div className="col-4">
-                <label for="nombre" className="form-label">Nombre</label>
+                <label htmlFor="nombre" className="form-label">Nombre</label>
                 <input type="text" className="form-control" id="nombre" placeholder="Ingresar nombre"
-                 value={nombre} onChange={(e) => setNombre(e.target.value)}/>
+                 name='nombre' value={values.nombre} onChange={handleChange} required title='Debes ingresar el nombre'/>
             </div>
 
             <div className="col-4">
-                <label for="apellido" className="form-label">Apellido</label>
+                <label htmlFor="apellido" className="form-label">Apellido</label>
                 <input type="text" className="form-control" id="apellido" placeholder="Ingresar apellido"
-                 value={apellido} onChange={(e) => setApellido(e.target.value)}/>
+                 name='apellido' value={values.apellido} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="domicilio-real" className="form-label">Domicilio real</label>
+                <label htmlFor="email" className="form-label">Email</label>
+                <input type="email" className="form-control" id="email" placeholder="Ingresar email"
+                 name='email' value={values.email} onChange={handleChange} required/>
+            </div>
+
+            <div className="col-4">
+                <label htmlFor="telefono" className="form-label">Telefono</label>
+                <input type="number" className="form-control" id="telefono" placeholder="Ingresar telefono"
+                 name='telefono' value={values.telefono} onChange={handleChange} required/>
+            </div>
+
+            <div className="col-4">
+                <label htmlFor="domicilio-real" className="form-label">Domicilio real</label>
                 <input type="text" className="form-control" id="domicilio-real" placeholder="Ingresar domicilio real"
-                value={domicilioReal} onChange={(e) => setDomR(e.target.value)}/>
+                name='domicilioReal'value={values.domicilioReal} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="domicilio-legal" className="form-label">Domicilio legal</label>
+                <label htmlFor="domicilio-legal" className="form-label">Domicilio legal</label>
                 <input type="text" className="form-control" id="domicilio-legal" placeholder="Ingresar domicilio legal"
-                value={domicilioLegal} onChange={(e) => setDomL(e.target.value)}/>
+                name='domicilioLegal' value={values.domicilioLegal} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="ciudad" className="form-label">Ciudad</label>
+                <label htmlFor="ciudad" className="form-label">Ciudad</label>
                 <input type="text" className="form-control" id="ciudad" placeholder="Ingresar ciudad"
-                value={ciudad} onChange={(e) => setCiudad(e.target.value)}/>
+                name='ciudad' value={values.ciudad} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="cp" className="form-label">CP</label>
-                <input type="cp" className="form-control" id="cp" placeholder="Ingresar Codigo Postal"
-                value={cp} onChange={(e) => setCp(e.target.value)}/>
+                <label htmlFor="cp" className="form-label">CP</label>
+                <input type="number" className="form-control" id="cp" placeholder="Ingresar Codigo Postal"
+                name='cp' value={values.cp} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="dni" className="form-label">DNI</label>
+                <label htmlFor="dni" className="form-label">DNI</label>
                 <input type="number" className="form-control" id="dni" placeholder="Ingresar dni"
-                value={dni} onChange={(e) => setDni(e.target.value)}/>
+                name='dni' value={values.dni} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="fechaDeNacimiento" className="form-label">Fecha de Nacimiento</label>
+                <label htmlFor="fechaDeNacimiento" className="form-label">Fecha de Nacimiento</label>
                 <input type="date" className="form-control" id="fechaDeNacimiento" placeholder="Ingresar fecha de nacimiento"
-                value={fechaNacimiento} onChange={(e) => setFechaNac(e.target.value)}/>
+                name='fechaNacimiento' value={values.fechaNacimiento} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="lugarDeNacimiento" className="form-label">Lugar de nacimento</label>
+                <label htmlFor="lugarDeNacimiento" className="form-label">Lugar de nacimento</label>
                 <input type="text" className="form-control" id="lugarDeNacimiento" placeholder="Ingresar lugar de nacimiento"
-                value={lugarNacimiento} onChange={(e) => setLugarNac(e.target.value)}/>
+                name='lugarNacimiento' value={values.lugarNacimiento} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="fechaDeIngreso" className="form-label">Fecha de ingreso</label>
+                <label htmlFor="fechaDeIngreso" className="form-label">Fecha de ingreso</label>
                 <input type="date" className="form-control" id="fechaDeIngreso" placeholder="Ingresar fecha de ingreso"
-                value={fechaIngreso} onChange={(e) => setfechaIngreso(e.target.value)}/>
+                name='fechaIngreso' value={values.fechaIngreso} onChange={handleChange} required/>
             </div>
 
             <div className="col-4">
-                <label for="rol" className="form-label">ROL</label>
-                <select name="rol" id="rol" className="form-control" placeholder="Elegir rol"
-                value={rol} onChange={(e) => setRol(e.target.value)}>
-
-                    <option disabled selected value="">Selecciona una opcion</option>
-                    <option value="FullStackDeveloper">FullStack Developer</option>
-                    <option value="FrontendDeveloper">FrontEnd Developer</option>
-                    <option value="BackEndDveloper">BackEnd Developer</option>
-                    <option value="Software Engineer">Software Engineer</option>
-                    <option value="AnalistaFuncional">Analista Funcional</option>
-                    <option value="UxUiDesigner">Ux/Ui Designer</option>
-                    <option value="Designer">Designer</option>
+                <label htmlFor="sector" className="form-label">Sector</label>
+                <select  id="sector" className="form-control" placeholder="Elegir sector"
+                name="sector" value={values.sector} onChange={handleChange} required>
 
                 </select>
             </div>
 
             <div className="col-4">
-                <label for="elementos" className="form-label">Elementos</label>
+                <label htmlFor="rol" className="form-label">ROL</label>
+                <select  id="rol" className="form-control" placeholder="Elegir rol"
+                name="rol" value={values.rol} onChange={handleChange} required>
+
+                 
+                </select>
+            </div>
+
+            <div className="col-4">
+                <label htmlFor="elementos" className="form-label">Elementos</label>
                 <input type="text" className="form-control" id="elementos" placeholder="Ingresar Elementos"
-                value={elementos} onChange={(e) => setElementos(e.target.value)}/>
+                name='elementos'value={values.elementos} onChange={handleChange} required />
             </div>
 
             <div className="col">
-             <button type="submit" className="btn btn-primary" value="guardar">Guardar</button>
+             <button type="submit" className="btn btn-primary col-3 mb-5" value="guardar">Guardar</button>
             </div>
             
 
