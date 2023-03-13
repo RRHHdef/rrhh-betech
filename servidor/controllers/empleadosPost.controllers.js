@@ -76,7 +76,7 @@ const postEmpleados = async (req, res) => {
             return
         } else {
             promise(req, res)
-            console.log('No existe el dni en la data base todo ok pa agenda al guacho')
+            console.log('No existe el dni en la data base, Todo ok para almacenar el empleado')
             
         }
       })
