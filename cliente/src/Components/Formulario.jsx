@@ -45,8 +45,9 @@ export const Formulario = () => {
         e.preventDefault()
            try {
             const resp = await axios.post(url, values)
-            console.log('desde axios: ',resp.data) // Devuelve 'created' por consola si todo esta ok
+          //  console.log('desde axios: ',resp.data.data) // Devuelve 'created' por consola si todo esta ok
             if(resp.data) {
+                
                 const itemOk = document.getElementById('contenedor')
                 const div = document.createElement('div')
                 div.textContent = 'Empleado agregado correctamente'
@@ -54,11 +55,19 @@ export const Formulario = () => {
                 div.role = 'alert'
                 itemOk.appendChild(div)
                 setTimeout(() => itemOk.removeChild(div) , 3000);
-                
                 setValues(initialState)
-            }
+
+            } 
         } catch (error) {
-            console.log(error.response)
+            console.log('desde catch error:', error.response)
+            const itemOk = document.getElementById('contenedor')
+            const div = document.createElement('div')
+            div.textContent = 'Ya existe un empleado con este DNI'
+            div.className = 'alert alert-danger'
+            div.role = 'alert'
+            itemOk.appendChild(div)
+            setTimeout(() => itemOk.removeChild(div) , 3000);
+
         }
      }
 
